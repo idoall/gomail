@@ -289,20 +289,14 @@ func newBase64LineWriter(w io.Writer) *base64LineWriter {
 func (w *base64LineWriter) Write(p []byte) (int, error) {
 	n := 0
 	for len(p)+w.lineLen > maxLineLen {
-		if _, err := w.w.Write(p[:maxLineLen-w.lineLen]); err != nil {
-			panic(err)
-		}
-		if _, err := w.w.Write([]byte("\r\n")); err != nil {
-			panic(err)
-		}
+		w.w.Write(p[:maxLineLen-w.lineLen])
+		w.w.Write([]byte("\r\n"))
 		p = p[maxLineLen-w.lineLen:]
 		n += maxLineLen - w.lineLen
 		w.lineLen = 0
 	}
 
-	if _, err := w.w.Write(p); err != nil {
-		panic(err)
-	}
+	w.w.Write(p)
 	w.lineLen += len(p)
 
 	return n + len(p), nil
